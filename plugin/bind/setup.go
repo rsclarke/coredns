@@ -53,14 +53,14 @@ func parse(c *caddy.Controller) (*bind, error) {
 	b := &bind{}
 	b.addrs = c.RemainingArgs()
 	if len(b.addrs) == 0 {
-		return nil, errors.New("at least one address or interface name is expected")
+		return nil, errors.New("at least one IP address, interface or hostname is expected")
 	}
 	for c.NextBlock() {
 		switch c.Val() {
 		case "except":
 			b.except = c.RemainingArgs()
 			if len(b.except) == 0 {
-				return nil, errors.New("at least one address or interface must be given to except subdirective")
+				return nil, errors.New("at least one IP address, interface or hostname must be given to except subdirective")
 			}
 		default:
 			return nil, fmt.Errorf("invalid option %q", c.Val())
