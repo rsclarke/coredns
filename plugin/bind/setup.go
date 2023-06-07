@@ -92,10 +92,12 @@ func listIP(args []string, ifaces []net.Interface) ([]string, error) {
 			}
 		}
 		if !isIface {
-			if net.ParseIP(a) == nil {
+			if net.ParseIP(a) != nil {
+				all = append(all, a)
+			} else {
 				return nil, fmt.Errorf("not a valid IP address or interface name: %q", a)
 			}
-			all = append(all, a)
+
 		}
 	}
 	return all, nil
