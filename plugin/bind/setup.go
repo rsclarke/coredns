@@ -95,9 +95,12 @@ func listIP(args []string, ifaces []net.Interface) ([]string, error) {
 			if net.ParseIP(a) != nil {
 				all = append(all, a)
 			} else {
-				return nil, fmt.Errorf("not a valid IP address or interface name: %q", a)
+				addrs, err := net.LookupHost(a)
+				if err != nil {
+					return nil, fmt.Errorf("not a valid IP address, interface or hostname: %q", a)
+				}
+				all = append(all, addrs...)
 			}
-
 		}
 	}
 	return all, nil
