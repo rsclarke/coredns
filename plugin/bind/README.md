@@ -7,35 +7,36 @@
 ## Description
 
 Normally, the listener binds to the wildcard host. However, you may want the listener to bind to
-another IP instead.
+another IP address instead.
 
-If several addresses are provided, a listener will be open on each of the IP provided.
+To specify the IP address of the listener the `bind` directive accepts an IP address, interface name or hostname.  Interface names and hostnames will be resolved to IP addresses. A listener will be open on each provided and resolved IP address.
 
-Each address has to be an IP or name of one of the interfaces of the host. Bind by interface name, binds to the IPs on that interface at the time of startup or reload (reload will happen with a SIGHUP or if the config file changes).
+Bind by interface name, binds to the IP addresses on that interface at the time of startup or reload (reload will happen with a SIGHUP or if the config file changes).
 
-If the given argument is an interface name, and that interface has serveral IP addresses, CoreDNS will listen on all of the interface IP addresses (including IPv4 and IPv6), except for IPv6 link-local addresses on that interface.
+Bind by hostname, binds to the IP addresses resolved by the default resolver at the time of startup or reload.
+
+If the given argument is an interface name or hostname, and that interface or hostname has serveral IP addresses, CoreDNS will listen on all of the IP addresses (including IPv4 and IPv6), except for IPv6 link-local addresses on an interface.
 
 ## Syntax
 
 In its basic form, a simple bind uses this syntax:
 
 ~~~ txt
-bind ADDRESS|IFACE  ...
+bind ADDRESS|IFACE|HOSTNAME  ...
 ~~~
 
 You can also exclude some addresses with their IP address or interface name in expanded syntax:
 
 ~~~
-bind ADDRESS|IFACE ... {
-    except ADDRESS|IFACE ...
+bind ADDRESS|IFACE|HOSTNAME ... {
+    except ADDRESS|IFACE|HOSTNAME ...
 }
 ~~~
 
-
-
-* **ADDRESS|IFACE** is an IP address or interface name to bind to.
+* **ADDRESS|IFACE|HOSTNAME** is an IP address, interface or hostname to bind to.
 When several addresses are provided a listener will be opened on each of the addresses. Please read the *Description* for more details.
-* `except`, excludes interfaces or IP addresses to bind to. `except` option only excludes addresses for the current `bind` directive if multiple `bind` directives are used in the same server block.
+* `except`, excludes IP addresses, interfaces or hostnames to bind to. `except` option only excludes addresses for the current `bind` directive if multiple `bind` directives are used in the same server block.
+
 ## Examples
 
 To make your socket accessible only to that machine, bind to IP 127.0.0.1 (localhost):
@@ -78,6 +79,16 @@ You can exclude some addresses by their IP or interface name (The following will
 . {
     bind lo {
         except 127.0.0.1
+    }
+}
+~~~
+
+Bind to localhost except for the local IPv6 host address `::1`.
+
+~~~ corefile
+. {
+    bind localhost {
+        except ::1
     }
 }
 ~~~
